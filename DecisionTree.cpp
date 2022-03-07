@@ -6,3 +6,4 @@ DecisionTree::DecisionTree(std::string criterion){
 
 double entropy();
 double gini();
+void fit();
