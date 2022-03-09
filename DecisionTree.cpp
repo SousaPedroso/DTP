@@ -5,27 +5,32 @@ DecisionTree::DecisionTree(std::string criterion){
     this->n_classes = 0;
 }
 
-std::map<std::variant<double, long long, std::string, char, bool>, int> get_values(std::vector<std::variant<double, long long, std::string, char, bool>> sample){
-    // Stores the number of diferent classes
-    std::map<std::variant<double, long long, std::string, char, bool>, int> differences;
-    std::map<std::variant<double, long long, std::string, char, bool>, int>::iterator d_iterator;
+std::map<multitype, std::map<multitype, int>> get_values(std::vector<multitype> sample, std::vector<multitype, int> classes){
+    // Stores the number of diferent classes, the first map is for the feature and second one to the class
+    std::map<multitype, std::map<multitype, int>> differences;
+    std::map<multitype, std::map<multitype, int>>::iterator d_iterator;
 
     // TO-DO: Stores the index in the dataset to fast check to compute entropy
 
     // Computes the number of differences and saves for calculating the entropy
     for (int i=0; i< sample.size(); i++){
         d_iterator = differences.find(sample[i]);
+        // Already found this attribute value
         if (d_iterator != differences.end()){
-            differences[sample[i]]++;
+            // Check if the output it is on the map
+            if (d_iterator->second.find(classes[i]) != d_iterator->second.end()){
+                differences[sample[i]][classes[i]]++;
+            }
         }
+        // Attribute First time seen
         else{
-            differences[sample[i]] = 0;
+            differences[sample[i]][classes[i]] = 0;
         }
     }
     return differences;
 }
 
-double DecisionTree::entropy(std::map<std::variant<double, long long, std::string, char, bool>, int> classes){
+double DecisionTree::entropy(std::map<multitype, int> classes){
     double e=0;
 
     // entropy
@@ -37,16 +42,28 @@ double DecisionTree::gini(){
 
 }
 
-void DecisionTree::fit(std::vector<std::vector<std::variant<double, long long, std::string, char, bool>>>X, std::vector<std::variant<double, long long, std::string, char, bool>>y){
+double DecisionTree::gain(double entropy1, double entropy2){
+    return entropy2 - entropy1;
+}
+
+void DecisionTree::fit(std::vector<std::vector<multitype>>X, std::vector<multitype>y){
 
     // Entropy/gini for the output classes
     double y_dispersion;
 
-    std::map<std::variant<double, long long, std::string, char, bool>, int> y_classes = this->get_values(y);
+    std::map<multitype, std::map<multitype, int>> y_classes = this->get_values(y, y);
     if (this->criterion == "entropy"){
-        y_dispersion = this->entropy(y_classes);
+        
     }
     else{
         y_dispersion = this->gini();
     }
+}
+
+multitype DecisionTree::predict(std::vector<multitype>X){
+
+}
+
+multitype DecisionTree::predict(std::vector<std::vector<multitype>>X){
+
 }
