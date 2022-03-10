@@ -21,6 +21,9 @@ std::map<multitype, std::map<multitype, int>> get_values(std::vector<multitype> 
             if (d_iterator->second.find(classes[i]) != d_iterator->second.end()){
                 differences[sample[i]][classes[i]]++;
             }
+            else{
+                differences[sample[i]][classes[i]] = 0;
+            }
         }
         // Attribute First time seen
         else{
@@ -30,11 +33,22 @@ std::map<multitype, std::map<multitype, int>> get_values(std::vector<multitype> 
     return differences;
 }
 
-double DecisionTree::entropy(std::map<multitype, int> classes){
+double DecisionTree::entropy(std::map<multitype, std::map<multitype, int>>values, int samples){
     double e=0;
+    // Checks the number of values for a feature
+    int attribute_count = 0;
 
-    // entropy
-    // Somatório da multiplicação de um atributo pelo log de quantas saídas ele resulta
+    for (auto attribute_value: values){
+        attribute_count = 0;
+        // Get the values for a class
+        for (auto value: attribute_value.second){
+            attribute_count += value.second;
+        }
+        for (auto value: attribute_value.second){
+            e += (value.second/attribute_count)* log2(value.second/attribute_count);
+        }
+        e += (attribute_count/samples)*(-e);
+    }
 
     return e;
 }
@@ -50,20 +64,74 @@ void DecisionTree::fit(std::vector<std::vector<multitype>>X, std::vector<multity
 
     // Entropy/gini for the output classes
     double y_dispersion;
+    double feature_dispersion;
+    double feature_gain;
+    // Computes the gain in execution time for the root
+    double max_gain=0;
+    int index_max_gain;
 
     std::map<multitype, std::map<multitype, int>> y_classes = this->get_values(y, y);
     if (this->criterion == "entropy"){
-        
+        y_dispersion = this->entropy(y_classes, y.size());
     }
     else{
         y_dispersion = this->gini();
     }
+    // Index for each feature
+    int index=0;
+    // Entropy and gain for each attribute
+    for (auto feature: X){
+        std::map<multitype, std::map<multitype, int>> feature_classes = this->get_values(feature, y);
+        if (this->criterion == "entropy"){
+            feature_dispersion = this->entropy(y_classes, y.size());
+        }
+        else{
+            feature_dispersion = this->gini();
+        }
+        feature_gain = this->gain(y_dispersion, feature_dispersion);
+        if (feature_gain > max_gain){
+            max_gain = feature_gain;
+            index_max_gain = index;
+        }
+        index ++;
+    }
+    // Add a node for a feature
+    std::string label = index_max_gain +"";
+    Node feature_gain_node = Node(label, -1);
+    this->tree.push_back(feature_gain_node);
+
+    // Stores the indices for each different value
+    // To proceed in DT calculating gain and the leaves
+    std::map<multitype, std::vector<int>> features_indices;
+
+    // Add a node for each value in this feature
+    index = 0;
+    for (auto feature_value: X[index_max_gain]){
+        // Check if this value was found for iterate through the tree
+        if (features_indices.find(feature_value) != features_indices.end()){
+            features_indices[feature_value].push_back(index);
+        }
+        else{
+            // Insert the first occurence of this value
+            features_indices.insert(std::pair<multitype, std::vector<int>>(feature_value, {index}));
+        }
+    }
 }
 
 multitype DecisionTree::predict(std::vector<multitype>X){
+    if (this->tree.size() == 0){
+        std::cout<< "Model not trained"<< std::endl;
+        return -1;
+    }
+    else {
+        // Goes through the tree according to the index
+    }
+}
+
+std::vector<multitype> DecisionTree::predict(std::vector<std::vector<multitype>>X){
 
 }
 
-multitype DecisionTree::predict(std::vector<std::vector<multitype>>X){
+std::vector<Node> get_tree(){
 
 }
