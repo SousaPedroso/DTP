@@ -79,7 +79,6 @@ void Perceptron::fit(std::vector<std::vector<double>>X, std::vector<double>y){
         for (auto data: X){
             data_activation = (this->dot_product(data)+bias);
             predictions[index] = data_activation;
-            // COMPUTE HERE THE STEP FUNCTION
         }
 
         // Computes the error
@@ -109,10 +108,25 @@ void Perceptron::fit(std::vector<std::vector<double>>X, std::vector<double>y){
             this->update_weights(X, predictions, y);
         }
 
+        if (this->verbose){
+            std::cout<< "Iteration "<< this->tot_iter<< " Loss: "<< e << std::endl;
+        }
+
         this->tot_iter ++;
     }
 }
 
-int Perceptron::predict(){
-    
+// Prediction for one target
+int Perceptron::predict(std::vector<double>X){
+    return this->step_function(this->dot_product(X));
+}
+
+// Prediction for multiple target
+std::vector<int> Perceptron::predict(std::vector<std::vector<double>>X){
+    std::vector<int> outputs(X.size(), 0);
+    for (auto target: X){
+        this->step_function(this->dot_product(target));
+    }
+
+    return outputs;
 }
