@@ -9,7 +9,7 @@ class Perceptron{
     private:
         std::vector<double> w;
         double tol;
-        int max_iter, n_iter, random_state;
+        int max_iter, n_iter, random_state, tot_iter;
         std::string error;
         void initialize_weights(int n);
         int step_function(double y_);
