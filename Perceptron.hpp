@@ -8,14 +8,19 @@
 class Perceptron{
     private:
         std::vector<double> w;
-        double tol;
+        double tol, bias, lr;
+        bool verbose;
         int max_iter, n_iter, random_state, tot_iter;
         std::string error;
+
         void initialize_weights(int n);
+        void update_weights(std::vector<std::vector<double>>X, std::vector<double>y_, std::vector<double>y);
+        double dot_product(std::vector<double>X);
         int step_function(double y_);
 
     public:
-        Perceptron(int max_iter=10, int n_iter=5, std::string error="mae", double tol=1e-3, double lr=0.1, int random_state=0);
-        void fit(std::vector<std::vector<multitype>>X, std::vector<multitype>y);
+        Perceptron(int max_iter=10, int n_iter=5, std::string error="mae", double tol=1e-3,
+                    double lr=0.1, int random_state=0, bool verbose=false);
+        void fit(std::vector<std::vector<double>>X, std::vector<double>y);
         int predict();
 };
