@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include <variant>
 #include <vector>
@@ -22,5 +23,6 @@ class Perceptron{
         Perceptron(int max_iter=10, int n_iter=5, std::string error="mae", double tol=1e-3,
                     double lr=0.1, int random_state=0, bool verbose=false);
         void fit(std::vector<std::vector<double>>X, std::vector<double>y);
-        int predict();
+        int predict(std::vector<double>X);
+        std::vector<int> predict(std::vector<std::vector<double>>X);
 };
