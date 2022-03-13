@@ -35,25 +35,42 @@ std::map<multitype, std::map<multitype, int>> get_values(std::vector<multitype> 
 
 double DecisionTree::entropy(std::map<multitype, std::map<multitype, int>>values, int samples){
     double e=0;
-    // Checks the number of values for a feature
-    int attribute_count = 0;
+    // Checks the counting of samples for a feature
+    int attribute_count;
 
     for (auto attribute_value: values){
         attribute_count = 0;
-        // Get the values for a class
-        for (auto value: attribute_value.second){
-            attribute_count += value.second;
+        // Update the counting of samples for a feature
+        for (auto class_value: attribute_value.second){
+            attribute_count += class_value.second;
         }
-        for (auto value: attribute_value.second){
-            e += (value.second/attribute_count)* log2(value.second/attribute_count);
+        // Consider each class associated with an attribute value
+        for (auto class_value: attribute_value.second){
+            e += (class_value.second/attribute_count)* log2(class_value.second/attribute_count);
         }
         e += (attribute_count/samples)*(-e);
     }
 
     return e;
 }
-double DecisionTree::gini(){
 
+// Gini impurity
+double DecisionTree::gini(std::map<multitype, std::map<multitype, int>>values, int samples){
+    double gi=1;
+    int attribute_count;
+
+    for (auto attribute_value: values){
+        attribute_count = 0;
+        // Update the counting of samples for a feature
+        for (auto class_value: attribute_value.second){
+            attribute_count += class_value.second;
+        }
+        // For each possibility of class, update gini impurity [(p_i)^2]
+        for (auto class_value: attribute_value.second){
+            gi -= pow(class_value.second/attribute_count, 2);
+        }
+    }
+    return gi;
 }
 
 double DecisionTree::gain(double entropy1, double entropy2){
@@ -71,6 +88,12 @@ void DecisionTree::fit(std::vector<std::vector<multitype>>X, std::vector<multity
     int index_max_gain;
 
     std::map<multitype, std::map<multitype, int>> y_classes = this->get_values(y, y);
+
+    // Data of one class means entropy equals 0, no dispersion (leaf)
+    if (y_classes.size() == 1){
+        return ;
+    }
+
     if (this->criterion == "entropy"){
         y_dispersion = this->entropy(y_classes, y.size());
     }
@@ -116,6 +139,8 @@ void DecisionTree::fit(std::vector<std::vector<multitype>>X, std::vector<multity
             features_indices.insert(std::pair<multitype, std::vector<int>>(feature_value, {index}));
         }
     }
+    // Solve the problem for the next attributes and values
+    
 }
 
 multitype DecisionTree::predict(std::vector<multitype>X){
