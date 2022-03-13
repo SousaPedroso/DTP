@@ -17,7 +17,7 @@ class DecisionTree{
         std::map<multitype, std::map<multitype, int>> get_values(std::vector<multitype> sample, std::vector<multitype> classes);
         // Get the classes for each attribute
         double entropy(std::map<multitype, std::map<multitype, int>>values, int samples);
-        double gini();
+        double gini(std::map<multitype, std::map<multitype, int>>values, int samples);
         double gain(double entropy1, double entropy2);
     public:
         DecisionTree(std::string criterion);
@@ -25,4 +25,4 @@ class DecisionTree{
         multitype predict(std::vector<multitype>X);
         std::vector<multitype> predict(std::vector<std::vector<multitype>>X);
         std::vector<Node> get_tree();
-}
+};
