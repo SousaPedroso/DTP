@@ -5,9 +5,6 @@
 #include <map>
 #include <utility>
 
-// Define variant to avoid repetition of term
-#define multitype std::variant<double, int, long long, std::string, char, bool>
-
 class DecisionTree{
     private:
         int n_features, n_classes;

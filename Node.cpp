@@ -1,6 +1,6 @@
 #include "Node.hpp"
 
-Node::Node(std::string label, std::variant<double, int, long long, std::string, char, bool> value){
+Node::Node(std::string label, multitype value){
     this->label = label;
     this->value = value;
 }
