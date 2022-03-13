@@ -77,6 +77,11 @@ double DecisionTree::gain(double entropy1, double entropy2){
     return entropy2 - entropy1;
 }
 
+void DecisionTree::names(std::vector<std::string>feature_names, std::string target_name){
+    this->target_name = target_name;
+    this->feature_names = feature_names;
+}
+
 void DecisionTree::fit(std::vector<std::vector<multitype>>X, std::vector<multitype>y){
 
     // Entropy/gini for the output classes
@@ -91,6 +96,10 @@ void DecisionTree::fit(std::vector<std::vector<multitype>>X, std::vector<multity
 
     // Data of one class means entropy equals 0, no dispersion (leaf)
     if (y_classes.size() == 1){
+        // All values are equal, get the first one
+        Node leave = Node(target_name, y[0]);
+        // Get the node which called him
+        this->tree[this->tree.size()-1].set_adjacent(leave);
         return ;
     }
 
@@ -98,8 +107,9 @@ void DecisionTree::fit(std::vector<std::vector<multitype>>X, std::vector<multity
         y_dispersion = this->entropy(y_classes, y.size());
     }
     else{
-        y_dispersion = this->gini();
+        y_dispersion = this->gini(y_classes, y.size());
     }
+    
     // Index for each feature
     int index=0;
     // Entropy and gain for each attribute
@@ -109,7 +119,7 @@ void DecisionTree::fit(std::vector<std::vector<multitype>>X, std::vector<multity
             feature_dispersion = this->entropy(y_classes, y.size());
         }
         else{
-            feature_dispersion = this->gini();
+            feature_dispersion = this->gini(y_classes, y.size());
         }
         feature_gain = this->gain(y_dispersion, feature_dispersion);
         if (feature_gain > max_gain){
@@ -138,9 +148,37 @@ void DecisionTree::fit(std::vector<std::vector<multitype>>X, std::vector<multity
             // Insert the first occurence of this value
             features_indices.insert(std::pair<multitype, std::vector<int>>(feature_value, {index}));
         }
+        index ++;
     }
-    // Solve the problem for the next attributes and values
-    
+    // Get the targets associated to next fit
+    std::map<multitype, std::map<multitype, int>> feature_classes = this->get_values(X[index_max_gain], y);
+
+    // Split the data according to the indices for solve the fit
+    // for expand the tree for each type of attribute
+    for (auto feature_value: features_indices){
+        // Get the data associated with the feature
+        std::vector<std::vector<multitype>>splitted_X = {{}};
+        std::vector<multitype>splitted_y = {};
+        // index of current data
+        index = 0;
+        // Get the indices containing the features, group the data and continues splitting
+        for (auto data: X){
+            // Get the values for each data at a certain index
+            for (auto feature_index: feature_value.second){
+                splitted_X[splitted_X.size()-1].push_back(data[feature_index]);
+            }
+            // Check Y associated with the feature
+            if (feature_classes[feature_value.first].find(y[index]) != feature_classes[feature_value.first].end()){
+                splitted_y.push_back(y[index]);
+            }
+            index ++;
+        }
+        // Solve the problem for the next attributes and values
+        // It is considered as a node, but it is the edge between two different attributes
+        Node edge = Node(this->tree[this->tree.size()-1].get_label(), feature_value.first);
+        this->tree[this->tree.size()-1].set_adjacent(edge);
+        this->fit(splitted_X, splitted_y);
+    }
 }
 
 multitype DecisionTree::predict(std::vector<multitype>X){
@@ -149,14 +187,13 @@ multitype DecisionTree::predict(std::vector<multitype>X){
         return -1;
     }
     else {
-        // Goes through the tree according to the index
-    }
+
 }
 
 std::vector<multitype> DecisionTree::predict(std::vector<std::vector<multitype>>X){
 
 }
 
-std::vector<Node> get_tree(){
-
+std::vector<Node> DecisionTree::get_tree(){
+    return this->tree;
 }
