@@ -4,8 +4,6 @@
 #include <vector>
 #include "error.hpp"
 
-#define multitype std::variant<double, int, long long, std::string, char, bool>
-
 class Perceptron{
     private:
         std::vector<double> w;
