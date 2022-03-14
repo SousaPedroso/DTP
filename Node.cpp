@@ -17,6 +17,10 @@ int Node::get_index(){
     return this->index;
 }
 
+multitype Node::get_value(){
+    return this->value;
+}
+
 void Node::set_adjacent(Node no){
     this->adjacents.push_back(no);
 }

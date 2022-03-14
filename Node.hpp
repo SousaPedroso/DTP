@@ -20,5 +20,6 @@ class Node{
         std::string get_label();
         int get_index();
         void set_adjacent(Node no);
+        multitype get_value();
         std::vector<Node> get_adjacents();
 };
