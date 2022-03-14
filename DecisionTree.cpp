@@ -5,7 +5,7 @@ DecisionTree::DecisionTree(std::string criterion){
     this->n_classes = 0;
 }
 
-std::map<multitype, std::map<multitype, int>> get_values(std::vector<multitype> sample, std::vector<multitype, int> classes){
+std::map<multitype, std::map<multitype, int>> DecisionTree::get_values(std::vector<multitype> sample, std::vector<multitype> classes){
     // Stores the number of diferent classes, the first map is for the feature and second one to the class
     std::map<multitype, std::map<multitype, int>> differences;
     std::map<multitype, std::map<multitype, int>>::iterator d_iterator;
