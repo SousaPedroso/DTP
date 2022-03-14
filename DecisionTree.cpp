@@ -80,6 +80,7 @@ double DecisionTree::gain(double entropy1, double entropy2){
 void DecisionTree::names(std::vector<std::string>feature_names, std::string target_name){
     this->target_name = target_name;
     this->feature_names = feature_names;
+    this->n_features = feature_names.size();
 }
 
 void DecisionTree::fit(std::vector<std::vector<multitype>>X, std::vector<multitype>y){
@@ -97,9 +98,8 @@ void DecisionTree::fit(std::vector<std::vector<multitype>>X, std::vector<multity
     // Data of one class means entropy equals 0, no dispersion (leaf)
     if (y_classes.size() == 1){
         // All values are equal, get the first one
-        Node leave = Node(target_name, y[0]);
-        // Get the node which called him
-        this->tree[this->tree.size()-1].set_adjacent(leave);
+        Node leave = Node(target_name, this->n_features, y[0]);
+        this->features.push(leave);
         return ;
     }
 
@@ -130,8 +130,14 @@ void DecisionTree::fit(std::vector<std::vector<multitype>>X, std::vector<multity
     }
     // Add a node for a feature
     std::string label = index_max_gain +"";
-    Node feature_gain_node = Node(label, -1);
-    this->tree.push_back(feature_gain_node);
+    Node feature_gain_node = Node(this->feature_names[index_max_gain], index_max_gain, -1);
+
+    if (this->tree == NULL){
+        this->tree = &feature_gain_node;
+    }
+    else {
+        features.push(feature_gain_node);
+    }
 
     // Stores the indices for each different value
     // To proceed in DT calculating gain and the leaves
@@ -175,25 +181,57 @@ void DecisionTree::fit(std::vector<std::vector<multitype>>X, std::vector<multity
         }
         // Solve the problem for the next attributes and values
         // It is considered as a node, but it is the edge between two different attributes
-        Node edge = Node(this->tree[this->tree.size()-1].get_label(), feature_value.first);
-        this->tree[this->tree.size()-1].set_adjacent(edge);
+        Node edge = Node(feature_gain_node.get_label(),
+                feature_gain_node.get_index(), feature_value.first);
+
+        // Edge for a feature
+        feature_gain_node.set_adjacent(edge);
         this->fit(splitted_X, splitted_y);
+        // Update with the results for each depth
+        edge.set_adjacent(this->features.top());
+        // Remove the element
+        this->features.pop();
     }
 }
 
 multitype DecisionTree::predict(std::vector<multitype>X){
-    if (this->tree.size() == 0){
+    if (this->tree == NULL){
         std::cout<< "Model not trained"<< std::endl;
         return -1;
     }
     else {
-
+        int index = 0;
+        // Goes through the tree according to the index
+        Node root = *this->tree;
+        while (true){
+            multitype X_value = X[root.get_index()];
+            for (auto feature_values: root.get_adjacents()){
+                if (feature_values.get_value() == X_value){
+                    root = feature_values;
+                    break;
+                }
+            }
+            // Check if it is a leave
+            if (root.get_index() == this->n_features){
+                return root.get_value();
+            }
+        }
+    }
 }
 
 std::vector<multitype> DecisionTree::predict(std::vector<std::vector<multitype>>X){
-
+    std::vector<multitype> predictions;
+    if (this->tree == NULL){
+        std::cout<< "Model not trained"<< std::endl;
+        return {};
+    }
+    for (auto data: X){
+        multitype output = this->predict(data);
+        predictions.push_back(output);
+    }
+    return predictions;
 }
 
-std::vector<Node> DecisionTree::get_tree(){
+Node* DecisionTree::get_tree(){
     return this->tree;
 }
