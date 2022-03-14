@@ -1,6 +1,6 @@
 #include "Perceptron.hpp"
 
-Perceptron::Perceptron(int max_iter=10, int n_iter=5, std::string error="mae", double tol=1e-3, double lr=0.1, int random_state=0, bool verbose=false){
+Perceptron::Perceptron(int max_iter, int n_iter, std::string error, double tol, double lr, int random_state, bool verbose){
     this->max_iter = max_iter;
     this->n_iter = n_iter;
     this->error = error;
