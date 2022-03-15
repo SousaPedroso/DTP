@@ -83,6 +83,10 @@ void DecisionTree::names(std::vector<std::string>feature_names, std::string targ
     this->n_features = feature_names.size();
 }
 
+std::vector<std::string> DecisionTree::get_features(){
+    return this->feature_names;
+}
+
 void DecisionTree::fit(std::vector<std::vector<multitype>>X, std::vector<multitype>y){
 
     // Entropy/gini for the output classes

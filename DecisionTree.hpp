@@ -23,6 +23,7 @@ class DecisionTree{
     public:
         DecisionTree(std::string criterion);
         void names(std::vector<std::string>feature_names, std::string target_name);
+        std::vector<std::string> get_features();
         void fit(std::vector<std::vector<multitype>>X, std::vector<multitype>y);
         multitype predict(std::vector<multitype>X);
         std::vector<multitype> predict(std::vector<std::vector<multitype>>X);
