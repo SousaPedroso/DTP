@@ -4,6 +4,5 @@
 #include <map>
 #include <utility>
 
-#define multitype std::variant<double, int, long long, std::string, char, bool>
-
-std::vector<int> integer_encoding(std::vector<multitype>X);
+// Vector of double to facilitate fit of Perceptron
+std::pair<std::vector<double>, std::map<std::string, int>> integer_encoding(std::vector<std::string>X);
