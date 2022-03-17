@@ -17,7 +17,7 @@ int Node::get_index(){
     return this->index;
 }
 
-multitype Node::get_value(){
+std::string Node::get_value(){
     return this->value;
 }
 
