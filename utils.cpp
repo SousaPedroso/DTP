@@ -21,7 +21,6 @@ std::vector<std::string> split_string(std::string line, std::string delimiter){
 std::vector<std::vector<std::string>> transpose(std::vector<std::vector<std::string>>m){
     int columns = m.size();
     int rows = m[0].size();
-    // 4 por 6 -> columns = 4, rows = 6
 
     std::vector<std::vector<std::string>> transposed_m(rows, std::vector<std::string>(columns, "0"));
 
