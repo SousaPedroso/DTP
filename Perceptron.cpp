@@ -1,6 +1,6 @@
 #include "Perceptron.hpp"
 
-Perceptron::Perceptron(int max_iter, int n_iter, std::string error, double tol, double lr, int random_state, bool verbose){
+Perceptron::Perceptron(bool verbose, int max_iter, int n_iter, std::string error, double tol, double lr, int random_state){
     this->max_iter = max_iter;
     this->n_iter = n_iter;
     this->error = error;
@@ -23,8 +23,7 @@ void Perceptron::initialize_weights(int n){
         // Initialize between 0 and 1
         this->w[i] = ((double)rand()/(double)(RAND_MAX));
     }
-    // bias starting negative
-    this->bias = -1*((double)rand()/(double)(RAND_MAX));
+    this->bias = ((double)rand()/(double)(RAND_MAX));
 }
 
 double Perceptron::dot_product(std::vector<double>X){
@@ -50,20 +49,16 @@ void Perceptron::update_weights(std::vector<std::vector<double>>X, std::vector<d
         if (output != y[i]){
             for (int j=0; j<this->w.size(); j++){
                 // attribute j of data at position i
-                this->w[j] = this->w[j] + (this->lr*X[i][j]*(output-y[i]));
+                this->w[j] = this->w[j] + (this->lr*X[i][j]*(y[i]-output));
             }
-            this->bias = this->bias + (this->lr*(-1)*(output-y[i]));
+            this->bias = this->bias + (this->lr*(-1)*(y[i]-output));
         }
     }
 }
 
 void Perceptron::fit(std::vector<std::vector<double>>X, std::vector<double>y){
-    // Normalize the features for X and y
-
-
     // Initialize weights according to the number of features
     this->initialize_weights(X[0].size());
-
     // Data necessary for compute the step function and the error
     double data_activation, e=0;
 
@@ -72,15 +67,13 @@ void Perceptron::fit(std::vector<std::vector<double>>X, std::vector<double>y){
     int index;
     // Stores the number of errors lesser than the tolerance
     int consecutive_errors=0;
-
     while (max_iter--){
-        data_activation = 0;
         index = 0;
         for (auto data: X){
-            data_activation = (this->dot_product(data)+bias);
+            data_activation = (this->dot_product(data)-this->bias);
             predictions[index] = data_activation;
+            index ++;
         }
-
         // Computes the error
         if (this->error == "mae"){
             e = mae(predictions, y);
@@ -107,6 +100,10 @@ void Perceptron::fit(std::vector<std::vector<double>>X, std::vector<double>y){
             // Update weights
             this->update_weights(X, predictions, y);
         }
+        else{
+            std::cout<< "Model converged, stopping early..."<< std::endl;
+            break;
+        }
 
         if (this->verbose){
             std::cout<< "Iteration "<< this->tot_iter<< " Loss: "<< e << std::endl;
@@ -118,14 +115,16 @@ void Perceptron::fit(std::vector<std::vector<double>>X, std::vector<double>y){
 
 // Prediction for one target
 int Perceptron::predict(std::vector<double>X){
-    return this->step_function(this->dot_product(X));
+    return this->step_function(this->dot_product(X)-this->bias);
 }
 
 // Prediction for multiple target
 std::vector<int> Perceptron::predict(std::vector<std::vector<double>>X){
     std::vector<int> outputs(X.size(), 0);
+    int index=0;
     for (auto target: X){
-        this->step_function(this->dot_product(target));
+        outputs[index] = this->step_function(this->dot_product(target)-this->bias);
+        index ++;
     }
 
     return outputs;
