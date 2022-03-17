@@ -21,10 +21,10 @@ std::string Node::get_value(){
     return this->value;
 }
 
-void Node::set_adjacent(Node no){
+void Node::set_adjacent(Node* no){
     this->adjacents.push_back(no);
 }
 
-std::vector<Node> Node::get_adjacents(){
+std::vector<Node*> Node::get_adjacents(){
     return this->adjacents;
 }
