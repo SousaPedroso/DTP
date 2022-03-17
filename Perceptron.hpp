@@ -4,6 +4,8 @@
 #include <vector>
 #include "error.hpp"
 
+#define endLine '\n'
+
 class Perceptron{
     private:
         std::vector<double> w;

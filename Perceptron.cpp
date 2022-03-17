@@ -101,12 +101,12 @@ void Perceptron::fit(std::vector<std::vector<double>>X, std::vector<double>y){
             this->update_weights(X, predictions, y);
         }
         else{
-            std::cout<< "Model converged, stopping early..."<< std::endl;
+            std::cout<< "Model converged, stopping early..."<< endLine;
             break;
         }
 
         if (this->verbose){
-            std::cout<< "Iteration "<< this->tot_iter<< " Loss: "<< e << std::endl;
+            std::cout<< "Iteration "<< this->tot_iter<< " Loss: "<< e << endLine;
         }
 
         this->tot_iter ++;
