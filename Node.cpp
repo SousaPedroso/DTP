@@ -1,6 +1,6 @@
 #include "Node.hpp"
 
-Node::Node(std::string label, int index, multitype value){
+Node::Node(std::string label, int index, std::string value){
     this->label = label;
     this->index = index; // Stores the index, considering the data containing it
     this->value = value;
