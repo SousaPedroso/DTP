@@ -41,7 +41,7 @@
 
 Proposed work on Artificial Intelligence by professor and Ph.D [Claudia Martins](http://lattes.cnpq.br/0252766947347684) to implement from scratch Decision Tree and Perceptron and compare the performance between those two ML algorithms through a small dataset.
 
-Both Decision Tree and Perceptron had 100% of accuracy on [training data](data/sample.in). Despite of that Perceptron needed increase the learning rate due to default value proposed (0.1) demonstrate _overffiting_, missleading one classification for [test data]((data/target.in)), considering the Decision Tree.
+Both Decision Tree and Perceptron had 100% of accuracy on [training data](data/sample.in). Modifying parameters can demonstrate different classifications on [new data](data/target.in) and due to not having the class for this data, any modification will depends on the target domain for choose which algorithm use.
 ## :sparkles: Features ##
 
 :heavy_check_mark: Perceptron and Decision Tree adaptable to multiple features (considering first column as index and last one the target);\
